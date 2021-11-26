@@ -1,13 +1,11 @@
 import streamlit as st
 from PIL import Image
-import cv2
+from cv2 import cv2
 import cv2.aruco as aruco
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-#from matplotlib import pyplot
 import matplotlib.gridspec as gridspec
-#from matplotlib.ticker import AutoMinorLocator, MultipleLocator
 from matplotlib.ticker import MultipleLocator
 from matplotlib.patches import Arc
 from matplotlib.transforms import IdentityTransform, TransformedBbox, Bbox

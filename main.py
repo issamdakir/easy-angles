@@ -196,22 +196,30 @@ def Calibrate(squareLength,markerLength,Cv2Images) :
     res = 1
     return res, message, cameraMatrix, distCoeffs
 
-###################################################################################################
-def GetCamIntrisics_from_File(CalibFile):
-    fn = CalibFile.name
-    if fn.endswith('.pckl') :
-        CalibFile.seek(0)
-        (K, distCoeffs, _, _) = pickle.load(CalibFile)
-    if fn.endswith('.txt') :
-        
-        with open(fn, 'r') as rf :
-            linesRead = rf.readlines()
-            K, distCoeffs = np.array( eval(linesRead[1]) ), np.array( eval(linesRead[3]) )
-            
-    fx, fy= K[0,0], K[1,1]
-    cx, cy = K[0,2], K[1,2]
-    return [(K, distCoeffs), (fx, fy, cx, cy)]
 
+def GetCamIntrisics_from_File(CalibFile):
+
+    fn = CalibFile.name
+
+    if fn.endswith('.pckl') :
+
+        CalibFile.seek(0)
+
+        (K, distCoeffs, _, _) = pickle.load(CalibFile)
+
+    if fn.endswith('.txt') :
+
+        lines = [l for l in CalibFile]
+
+        K, distCoeffs = np.array( eval(lines[1]) ), np.array( eval(lines[3]) )
+
+            
+
+    fx, fy= K[0,0], K[1,1]
+
+    cx, cy = K[0,2], K[1,2]
+
+    return [(K, distCoeffs), (fx, fy, cx, cy)]
 ###################################################################################################
 
 def bdental_facebow():    

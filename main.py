@@ -424,9 +424,7 @@ def main():
             if CalibrateButton :
                 Processing = st.empty()
                 Processing.text('Please wait while processing, results will be displayed within few secondes...')
-                res, message,CHARUCO_BOARD,image_size, corners_all, ids_all 
-
-= Calibrate(CaseLength,MarkerLength,CalibFiles)
+                res, message,CHARUCO_BOARD,image_size, corners_all, ids_all = Calibrate(CaseLength,MarkerLength,CalibFiles)
                 if res :
                     calibration,cameraMatrix,distCoeffs,rvecs,tvecs = aruco.calibrateCameraCharuco(
                     charucoCorners=corners_all,

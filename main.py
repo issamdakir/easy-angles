@@ -125,6 +125,8 @@ def Calibrate(squareLength,markerLength,CalibFiles) :
     ids_all = []  # Aruco ids corresponding to corners discovered
     counter = 0
     image_size = tuple()
+    message = []
+    res = 0
 
     for f in CalibFiles:
         try :
@@ -138,14 +140,15 @@ def Calibrate(squareLength,markerLength,CalibFiles) :
                     image_size = gray.shape[::-1]
                 else :
                     if image_size != gray.shape[::-1] :
-                        res = 0
+                        
                         message = [
                                     "WARNING:",
                                     "Calibration was unsuccessful!",
                                     "Calibration Images have not uniforme size.",
                                     "Please Remove Uploded Images, and try upload uniforme sized images,"
                                     "from same camera and retry."  ]
-                        return res, message, None, None
+                        break
+                        
                     else :
                         corners, ids, _ = aruco.detectMarkers(
                             image=gray, dictionary=ARUCO_DICT, parameters=ARUCO_PARAMETERS 
@@ -169,45 +172,13 @@ def Calibrate(squareLength,markerLength,CalibFiles) :
             print(f'cant open {f.name}')
             print(Error)
             continue
-        
-        
-    if counter < 10 :
-        res = 0
-        message = [
-        "WARNING:",
-        "Calibration was unsuccessful!",
-        f"{counter}  processed Calibration Images.",
-        "A minimum of 10 good images is required.",
-        "Please try upload more images and retry."]
-        return res, message, None, None
+    if coners_all and ids_all : res = 1
+    return res, message, CHARUCO_BOARD,image_size, corners_all, ids_all
+    #################################"]
 
-    if 10 <= counter < 20 :
-        message = [
-        f"{counter}  processed Calibration Images.",  
-        "Precision : Calibration result may be imprecise.",
-        "##################################################"]
-    if 20 <= counter < 40 :
-        message = [
-        f"{counter} processed Calibration Images.",  
-        "Precision : Good Calibration results.",
-        "##################################################"]
-    if 40 <= counter : 
-        message = [
-        f"{counter} processed Calibration Images.",  
-        "Precision : Excellent Calibration results .",
-        "##################################################"]
-
-    calibration,cameraMatrix,distCoeffs,rvecs,tvecs = aruco.calibrateCameraCharuco(
-        charucoCorners=corners_all,
-        charucoIds=ids_all,
-        board=CHARUCO_BOARD,
-        imageSize=image_size,
-        cameraMatrix=None,
-        distCoeffs=None,
-        )
-    res = 1
-    return res, message, cameraMatrix, distCoeffs
-
+    
+    
+    
 
 def GetCamIntrisics_from_File(CalibFile):
 
@@ -453,8 +424,18 @@ def main():
             if CalibrateButton :
                 Processing = st.empty()
                 Processing.text('Please wait while processing, results will be displayed within few secondes...')
-                
-                res, message, cameraMatrix, distCoeffs = Calibrate(CaseLength,MarkerLength,CalibFiles)
+                res, message,CHARUCO_BOARD,image_size, corners_all, ids_all 
+
+= Calibrate(CaseLength,MarkerLength,CalibFiles)
+                if res :
+                    calibration,cameraMatrix,distCoeffs,rvecs,tvecs = aruco.calibrateCameraCharuco(
+                    charucoCorners=corners_all,
+                    charucoIds=ids_all,
+                    board=CHARUCO_BOARD,
+                    imageSize=image_size,
+                    cameraMatrix=None,
+                    distCoeffs=None,
+                    )
                 Processing.text('')
                 st.subheader('*Camera calibration results :*')
                 for line in message :

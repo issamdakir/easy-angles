@@ -129,8 +129,8 @@ def Calibrate(squareLength,markerLength,CalibFiles) :
     for f in CalibFiles:
         try :
             img = Image.open(f)
-            Cv2Image = np.array(img)
-            if Cv2Image is not None :
+            Cv2img = np.array(img)
+            if Cv2img is not None :
                 gray = cv2.cvtColor(Cv2img, cv2.COLOR_BGR2GRAY)
                 if not image_size :
                     image_size = gray.shape[::-1]

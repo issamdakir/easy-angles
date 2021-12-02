@@ -117,7 +117,7 @@ Left_TMJ_board = aruco.Board_create(board_corners_facebow, ARUCO_DICT, Left_TMJ_
 Nose_board = aruco.Board_create(board_corners_facebow, ARUCO_DICT, Nose_board_ids)
 
 
-def Calibrate(squareLength,markerLength,Cv2Images) :
+def Calibrate(squareLength,markerLength,CalibFiles) :
 
     ARUCO_DICT = aruco.Dictionary_get(aruco.DICT_5X5_1000)
     CHARUCO_BOARD = aruco.CharucoBoard_create(5,7,squareLength,markerLength,ARUCO_DICT)   
@@ -126,38 +126,48 @@ def Calibrate(squareLength,markerLength,Cv2Images) :
     counter = 0
     image_size = tuple()
 
-    for Cv2img in Cv2Images:
-        gray = cv2.cvtColor(Cv2img, cv2.COLOR_BGR2GRAY)
-        if not image_size :
-            image_size = gray.shape[::-1]
-        else :
-            if image_size != gray.shape[::-1] :
-                res = 0
-                message = [
-                            "WARNING:",
-                            "Calibration was unsuccessful!",
-                            "Calibration Images have not uniforme size.",
-                            "Please Remove Uploded Images, and try upload uniforme sized images,"
-                            "from same camera and retry."  ]
-                return res, message, None, None
-            else :
-                corners, ids, _ = aruco.detectMarkers(
-                    image=gray, dictionary=ARUCO_DICT, parameters=ARUCO_PARAMETERS 
-                )
+    for f in CalibFiles:
+        try :
+            img = Image.open(f)
+            Cv2Image = np.array(img)
+            if Cv2Image is not None :
+                gray = cv2.cvtColor(Cv2img, cv2.COLOR_BGR2GRAY)
+                if not image_size :
+                    image_size = gray.shape[::-1]
+                else :
+                    if image_size != gray.shape[::-1] :
+                        res = 0
+                        message = [
+                                    "WARNING:",
+                                    "Calibration was unsuccessful!",
+                                    "Calibration Images have not uniforme size.",
+                                    "Please Remove Uploded Images, and try upload uniforme sized images,"
+                                    "from same camera and retry."  ]
+                        return res, message, None, None
+                    else :
+                        corners, ids, _ = aruco.detectMarkers(
+                            image=gray, dictionary=ARUCO_DICT, parameters=ARUCO_PARAMETERS 
+                        )
                 
-                if corners :
-                    response,charuco_corners,charuco_ids = aruco.interpolateCornersCharuco(
-                        markerCorners=corners,
-                        markerIds=ids,
-                        image=gray,
-                        board=CHARUCO_BOARD,
-                    )
-                    if response > 20:
-                        # Add these corners and ids to our calibration arrays
-                        corners_all.append(charuco_corners)
-                        ids_all.append(charuco_ids)
-                        # Draw the Charuco board we've detected to show our calibrator the board was properly detected
-                        counter+=1
+                        if corners :
+                            response,charuco_corners,charuco_ids = aruco.interpolateCornersCharuco(
+                                markerCorners=corners,
+                                markerIds=ids,
+                                image=gray,
+                                board=CHARUCO_BOARD,
+                            )
+                            if response > 20:
+                                # Add these corners and ids to our calibration arrays
+                                corners_all.append(charuco_corners)
+                                ids_all.append(charuco_ids)
+                                # Draw the Charuco board we've detected to show our calibrator the board was properly detected
+                                counter+=1
+                
+        except Exception as Error:
+            print(f'cant open {f.name}')
+            print(Error)
+            continue
+        
         
     if counter < 10 :
         res = 0
@@ -440,17 +450,7 @@ def main():
             if CalibrateButton :
                 Processing = st.empty()
                 Processing.text('Please wait while processing, results will be displayed within few secondes...')
-                Cv2Images = []
-                for f in CalibFiles:
-                    try :
-                        img = Image.open(f)
-                        Cv2img = np.array(img)
-                        if Cv2img.size > 1 :
-                            Cv2Images.append(Cv2img)
-                    except Exception as Error:
-                        print(f'cant open {f.name}')
-                        print(Error)
-                        continue
+                
                 res, message, cameraMatrix, distCoeffs = Calibrate(CaseLength,MarkerLength,Cv2Images)
                 Processing.text('')
                 st.subheader('*Camera calibration results :*')

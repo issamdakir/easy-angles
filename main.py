@@ -451,7 +451,7 @@ def main():
                 Processing = st.empty()
                 Processing.text('Please wait while processing, results will be displayed within few secondes...')
                 
-                res, message, cameraMatrix, distCoeffs = Calibrate(CaseLength,MarkerLength,Cv2Images)
+                res, message, cameraMatrix, distCoeffs = Calibrate(CaseLength,MarkerLength,CalibFiles)
                 Processing.text('')
                 st.subheader('*Camera calibration results :*')
                 for line in message :

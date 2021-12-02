@@ -130,7 +130,9 @@ def Calibrate(squareLength,markerLength,CalibFiles) :
         try :
             img = Image.open(f)
             Cv2img = np.array(img)
+            
             if Cv2img is not None :
+                print('Cv2img size = ', Cv2img.size)
                 gray = cv2.cvtColor(Cv2img, cv2.COLOR_BGR2GRAY)
                 if not image_size :
                     image_size = gray.shape[::-1]
@@ -444,6 +446,7 @@ def main():
         CalibFiles = st.file_uploader("", type=['png', 'jpg','tif','tiff','TIF','TIFF', 'jpeg','bmp','webp','pfm','sr','ras','exr','hdr','pic'], accept_multiple_files=True)
         
         if CalibFiles :
+            
             CaseLength = st.number_input(label='Square width', min_value=0.00, max_value=None, value=24.40, help='The width in mm of the calibration board Square')                
             MarkerLength = st.number_input(label='Marker width', min_value=0.00, max_value=None, value=12.30, help='The width in mm of the calibration board Marker')                
             CalibrateButton = st.button('CALIBRATE CAMERA')

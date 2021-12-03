@@ -566,6 +566,8 @@ def main():
                             Nose_Tvec = Nose_Tvec.reshape((3, 1))*1000
                             Nose_Tvec = ['7', Nose_Tvec[0][0], Nose_Tvec[2][0], -Nose_Tvec[1][0]]
                             facebow_tvecs.append(Nose_Tvec)
+
+                            objects_poses[image_file.name] = {"Facebow_tvecs" : facebow_tvecs}
                         ####################################################
                         #UpBoard
                         ####################################################
@@ -592,6 +594,9 @@ def main():
                             Up_Board_matrix = Up_Board_matrix*c
                             Up_Board_matrix = np.vstack([Up_Board_matrix, newrow])
                             Up_Board_matrix = Up_Board_matrix.tolist()
+
+                            objects_poses[image_file.name] = {"Up_Board_matrix" : Up_Board_matrix}
+
                         ####################################################
                         #LowBoard
                         ####################################################
@@ -618,16 +623,19 @@ def main():
                             Low_Board_matrix = Low_Board_matrix*c
                             Low_Board_matrix = np.vstack([Low_Board_matrix, newrow])
                             Low_Board_matrix = Low_Board_matrix.tolist()
+
+                            objects_poses[image_file.name] = {"Low_Board_matrix" : Low_Board_matrix}
                         #cv2.aruco.drawDetectedMarkers(im,corners,ids)
                     #######################################
                     #Write data to dict
                     #######################################
-                    objects_poses[image_file.name] = {
-                        "Facebow_tvecs" : facebow_tvecs,
-                        "Up_Board_matrix" : Up_Board_matrix,
-                        "Low_Board_matrix" : Low_Board_matrix
-                    }
+                    # objects_poses[image_file.name] = {
+                    #     "Facebow_tvecs" : facebow_tvecs,
+                    #     "Up_Board_matrix" : Up_Board_matrix,
+                    #     "Low_Board_matrix" : Low_Board_matrix
+                    # }
                     st.image(im,use_column_width=True)
+            print(objects_poses)
             ##########################################
             UpBoard_Matrix = np.zeros((4, 4))
             Facebow_zero_matrix = np.eye(4)
